@@ -8,7 +8,7 @@ import speakingurl from 'speakingurl';
 const bucket = 'sermons.onewaymargate.org';
 
 function getPresignedPostData(selectedFile, bucket) {
-  return fetch('http://localhost:3000/api/sermon-upload', {
+  return fetch('https://www.onewaymargate.org/api/sermon-upload', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
