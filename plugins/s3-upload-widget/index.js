@@ -4,6 +4,7 @@ import Button from 'part:@sanity/components/buttons/default';
 import sanityClient from 'part:@sanity/base/client';
 import styles from './s3upload.css';
 import speakingurl from 'speakingurl';
+import { BeatLoader } from 'react-spinners';
 
 const bucket = 'sermons.onewaymargate.org';
 
@@ -375,7 +376,7 @@ class s3upload extends Component {
             }
           >
             {this.state.uploadState === uploadStates[2]
-              ? 'Spinner'
+              ? <BeatLoader/>
               : this.state.uploadState === uploadStates[3]
                 ? 'Sermon Published'
                 : 'Publish Sermon'}
