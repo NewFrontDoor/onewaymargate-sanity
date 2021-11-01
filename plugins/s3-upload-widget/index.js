@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import Button from 'part:@sanity/components/buttons/default';
 import sanityClient from 'part:@sanity/base/client';
@@ -8,7 +8,7 @@ import speakingurl from 'speakingurl';
 const bucket = 'sermons.onewaymargate.org';
 
 function getPresignedPostData(selectedFile, bucket) {
-  return fetch('https://onewaymargate.org/api/sermon-upload', {
+  return fetch('http://localhost:3000/api/sermon-upload', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -35,19 +35,19 @@ function uploadFileToS3(presignedPostData, file) {
   });
 }
 
-function patchSanity({title, passage, series, date, speaker, key}) {
+function patchSanity({ title, passage, series, preachedDate, speaker, key }) {
   const doc = {
-    _type: 'sermon',
+    _type: 'sermons',
     title,
     passage,
     slug: {
       _type: 'slug',
-      current: speakingurl(title, {truncate: 200, symbols: true})
+      current: speakingurl(title, { truncate: 200, symbols: true })
     },
-    preachedDate: date,
-    speaker: {_ref: speaker},
-    series: {_ref: series},
-    file: key
+    preachedDate: preachedDate,
+    preacher: { _ref: speaker },
+    series: { _ref: series },
+    file: key.fields.key
   };
 
   return sanityClient.create(doc).then(res => {
@@ -108,7 +108,7 @@ class s3upload extends Component {
 
   onDrop = (acceptedFiles, rejectedFiles) => {
     this.activateUpload(acceptedFiles[0], bucket);
-    this.setState({file: acceptedFiles, fileName: acceptedFiles[0].name});
+    this.setState({ file: acceptedFiles, fileName: acceptedFiles[0].name });
   };
 
   componentDidMount() {
@@ -124,9 +124,9 @@ class s3upload extends Component {
   }
 
   handleInputChange(event) {
-    const {target} = event;
+    const { target } = event;
     const value = target.type === 'checkbox' ? target.checked : target.value;
-    const {name} = target;
+    const { name } = target;
     this.setState({
       [name]: value
     });
@@ -182,9 +182,9 @@ class s3upload extends Component {
                 acceptedFiles,
                 rejectedFiles
               }) => {
-                let styles = {...baseStyle};
-                styles = isDragActive ? {...styles, ...activeStyle} : styles;
-                styles = isDragReject ? {...styles, ...rejectStyle} : styles;
+                let styles = { ...baseStyle };
+                styles = isDragActive ? { ...styles, ...activeStyle } : styles;
+                styles = isDragReject ? { ...styles, ...rejectStyle } : styles;
                 return (
                   <div {...getRootProps()} style={styles}>
                     <input {...getInputProps()} />
@@ -296,8 +296,8 @@ class s3upload extends Component {
             }}
             onChange={this.handleInputChange}
           />
-          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}>
-            <div style={{gridColumn: '1'}}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+            <div style={{ gridColumn: '1' }}>
               <label
                 htmlFor="speaker"
                 style={{
@@ -312,23 +312,23 @@ class s3upload extends Component {
               <select
                 name="speaker"
                 value={this.state.speaker}
-                style={{width: '90%'}}
+                style={{ width: '90%' }}
                 className={styles.selectCss}
                 onChange={this.handleInputChange}
               >
                 <option>Please select</option>
                 {this.state.dataTrue
                   ? this.state.speakerList.map(speaker => {
-                      return (
-                        <option key={speaker._id} value={speaker._id}>
-                          {speaker.name}
-                        </option>
-                      );
-                    })
+                    return (
+                      <option key={speaker._id} value={speaker._id}>
+                        {speaker.name}
+                      </option>
+                    );
+                  })
                   : ''}
               </select>
             </div>
-            <div style={{gridColumn: '2'}}>
+            <div style={{ gridColumn: '2' }}>
               <label
                 htmlFor="series"
                 style={{
@@ -343,19 +343,19 @@ class s3upload extends Component {
               <select
                 name="series"
                 value={this.state.series}
-                style={{width: '90%'}}
+                style={{ width: '90%' }}
                 className={styles.selectCss}
                 onChange={this.handleInputChange}
               >
                 <option>Please select</option>
                 {this.state.dataTrue
                   ? this.state.seriesList.map(series => {
-                      return (
-                        <option key={series._id} value={series._id}>
-                          {series.title}
-                        </option>
-                      );
-                    })
+                    return (
+                      <option key={series._id} value={series._id}>
+                        {series.title}
+                      </option>
+                    );
+                  })
                   : ''}
               </select>
             </div>
@@ -377,8 +377,8 @@ class s3upload extends Component {
             {this.state.uploadState === uploadStates[2]
               ? 'Spinner'
               : this.state.uploadState === uploadStates[3]
-              ? 'Sermon Published'
-              : 'Publish Sermon'}
+                ? 'Sermon Published'
+                : 'Publish Sermon'}
           </Button>
         </div>
       </div>
