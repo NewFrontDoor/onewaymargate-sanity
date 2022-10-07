@@ -17,7 +17,7 @@ export default [
         preachedDate: sunday,
         preacher: {
           _type: 'reference',
-          _ref: 'ec300289-65a8-4c56-aa53-304f7d263695'
+          _ref: '2014070e-987e-447d-b4ad-d6a940dbb017'
         },
         series: await client.fetch(`//groq
       *[_type == "series" && concluded == false]{
